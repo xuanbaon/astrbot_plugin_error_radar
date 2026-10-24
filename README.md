@@ -75,11 +75,13 @@ notify:
 
 ```bash
 cd AstrBot/data/plugins
-git clone <this-repo> astrbot_plugin_error_radar
+git clone https://github.com/xuanbaon/astrbot_plugin_error_radar.git
 # 重启 AstrBot，或在 WebUI 插件页重载
 ```
 
-无第三方依赖，不需要 `pip install`。
+也可以直接在 WebUI 的插件市场搜索「错误雷达」，或把 Release 里的 zip 拖进插件页。
+
+无第三方依赖，不需要 `pip install`。装好先发一条 `/雷达 测试`，能返回编号就说明采集通路是通的。
 
 ## 配置项
 
