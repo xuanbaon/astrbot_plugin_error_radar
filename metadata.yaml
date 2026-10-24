@@ -14,7 +14,7 @@ help: |-
   /雷达 清空       清空记录
 version: 1.0.0
 author: Xbnremirror
-repo: 
+repo: https://github.com/Xbnremirror/astrbot_plugin_error_radar
 astrbot_version: ">=4.17.0"
 tags:
   - 运维
