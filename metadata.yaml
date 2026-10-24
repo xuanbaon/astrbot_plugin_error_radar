@@ -12,7 +12,7 @@ help: |-
   /雷达 群         查看群号与正确的会话 ID 写法
   /雷达 测试       自检告警通路
   /雷达 清空       清空记录
-version: 1.0.0
+version: 1.1.0
 author: xuanbaon
 repo: https://github.com/xuanbaon/astrbot_plugin_error_radar
 astrbot_version: ">=4.17.0"
