@@ -94,6 +94,8 @@ RULES: list[tuple[str, str, str, str]] = [
 IGNORE_DEFAULT = [
     "has no speech-to-text provider",
     "DeprecationWarning",
+    "DEPRECATION:",
+    "Unexpected import of",
     "Executed handler",
     "可忽略",
     "Provider 暂时不可用",
@@ -195,10 +197,29 @@ class ErrorRadar(Star):
 
     def _append_disk(self, record: dict) -> None:
         try:
+            self._rotate_if_needed()
             with self.jsonl_path.open("a", encoding="utf-8") as handle:
                 handle.write(json.dumps(record, ensure_ascii=False) + "\n")
         except Exception:
             logger.debug("[error_radar] 写入错误日志失败", exc_info=True)
+
+    def _rotate_if_needed(self) -> None:
+        """单个记录文件涨太大就换一份，只留最近一份旧的。"""
+        try:
+            limit_mb = max(1.0, float(self._cfg("max_file_mb", 5)))
+        except Exception:
+            limit_mb = 5.0
+        try:
+            if not self.jsonl_path.is_file():
+                return
+            if self.jsonl_path.stat().st_size <= limit_mb * 1024 * 1024:
+                return
+            backup = self.jsonl_path.with_name(self.jsonl_path.name + ".1")
+            backup.unlink(missing_ok=True)
+            self.jsonl_path.rename(backup)
+            logger.info(f"[error_radar] 记录文件超过 {limit_mb:g}MB，已轮转为 {backup.name}")
+        except Exception:
+            logger.debug("[error_radar] 轮转失败", exc_info=True)
 
     # ---------------- 采集 ----------------
     async def _record(
@@ -323,14 +344,24 @@ class ErrorRadar(Star):
 
     def _resolve_log_path(self) -> Path:
         configured = str(self._cfg("log_path", "") or "").strip()
+        candidates: list[Path] = []
         if configured:
-            return Path(configured)
+            candidates.append(Path(configured))
         try:
             from astrbot.core.utils.astrbot_path import get_astrbot_data_path
 
-            return Path(get_astrbot_data_path()) / "logs" / "astrbot.log"
+            candidates.append(Path(get_astrbot_data_path()) / "logs" / "astrbot.log")
         except Exception:
-            return Path(__file__).resolve().parents[2] / "logs" / "astrbot.log"
+            pass
+        # data/plugins/<pkg>/main.py → parents[2] 就是 data 目录
+        candidates.append(Path(__file__).resolve().parents[2] / "logs" / "astrbot.log")
+        for candidate in candidates:
+            try:
+                if candidate.is_file():
+                    return candidate
+            except Exception:
+                continue
+        return candidates[-1]
 
     async def _tail_logs(self) -> None:
         log_path = self._resolve_log_path()
@@ -429,6 +460,8 @@ class ErrorRadar(Star):
             yield event.plain_result(self._clear())
         elif action in {"测试", "test"}:
             yield event.plain_result(await self._self_test())
+        elif action in {"路径", "path", "文件"}:
+            yield event.plain_result(self._render_paths())
         else:
             yield event.plain_result(self._render_overview())
 
@@ -449,8 +482,35 @@ class ErrorRadar(Star):
         for record in todays[-3:]:
             stamp = datetime.fromtimestamp(record["last_seen"]).strftime("%H:%M")
             lines.append(f"· {stamp} [{record['category']}] {record['summary'][:60]}（{record['id']}）")
-        lines.append("详情：/雷达 详情 <编号>　全部：/雷达 列表 20")
+        lines.append("详情：/雷达 详情 <编号>　全部：/雷达 列表 20　文件：/雷达 路径")
         return "\n".join(lines)
+
+    def _render_paths(self) -> str:
+        """把两个文件的绝对路径直接打出来，省得在实例目录里翻。"""
+        log_path = self._resolve_log_path()
+        rows = [
+            "错误雷达的文件位置",
+            f"记录：{self.jsonl_path}",
+            f"　{'存在' if self.jsonl_path.is_file() else '还没生成'}"
+            f"{self._size_hint(self.jsonl_path)}",
+            f"核心日志：{log_path}",
+            f"　{'存在' if log_path.is_file() else '不存在，检查 log_path 配置'}"
+            f"{self._size_hint(log_path)}",
+            "数据目录：实例目录下 core/data，日志在 core/data/logs",
+        ]
+        return "\n".join(rows)
+
+    @staticmethod
+    def _size_hint(path: Path) -> str:
+        try:
+            size = path.stat().st_size
+        except Exception:
+            return ""
+        if size >= 1024 * 1024:
+            return f"（{size / 1024 / 1024:.1f}MB）"
+        if size >= 1024:
+            return f"（{size / 1024:.0f}KB）"
+        return f"（{size}B）"
 
     def _render_list(self, arg: str) -> str:
         try:
