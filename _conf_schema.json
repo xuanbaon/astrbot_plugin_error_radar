@@ -41,7 +41,14 @@
         "default": [
           "has no speech-to-text provider",
           "DeprecationWarning",
-          "Executed handler"
+          "Executed handler",
+          "可忽略",
+          "Provider 暂时不可用",
+          "prometheus_client 不可用",
+          "cachetools 未安装",
+          "未指定任何Provider",
+          "PostgreSQL 启动失败",
+          "未配置 provider_id"
         ],
         "hint": "命中任一关键词的记录直接丢弃，用来压掉已知噪音。"
       },

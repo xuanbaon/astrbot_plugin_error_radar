@@ -13,7 +13,7 @@ help: |-
   /雷达 测试       自检告警通路
   /雷达 清空       清空记录
 version: 1.0.0
-author: WorkBuddy
+author: Xbnremirror
 repo: 
 astrbot_version: ">=4.17.0"
 tags:
