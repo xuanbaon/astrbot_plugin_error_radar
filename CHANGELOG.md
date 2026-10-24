@@ -1,5 +1,12 @@
 # 更新日志
 
+## 1.1.0
+
+- 新增 `/雷达 路径`：直接打印记录文件与核心日志的绝对路径（`data` 目录藏在实例目录的 `core/data` 下，很多人找不到）
+- 新增 `max_file_mb`：记录文件超过上限自动轮转为 `errors.jsonl.1`，只保留一份旧的，避免无限增长
+- 修复：`DEPRECATION: Unexpected import ...` 这类启动噪音没被默认忽略列表挡住（原来只匹配 `DeprecationWarning`），一次重载能刷上千条。默认列表补上 `DEPRECATION:` 与 `Unexpected import of`
+- 改进：日志路径解析加多级兜底，配置、数据目录、插件目录三处依次尝试，避免路径算错导致监听不到
+
 ## 1.0.0
 
 - 三路采集：插件异常、LLM 工具失败、核心日志 WARN/ERROR
