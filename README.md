@@ -10,7 +10,7 @@ AstrBot 的日志里其实什么都不缺：`astrbot.log` 会记下 429、`inval
 
 | 你遇到的 | 日志里的样子 | 之前你看到的 |
 | --- | --- | --- |
-| 群里机器人不发表情了 | `error: invalid session: aiocqhttp:group:669407365` | 什么都没有，只是「不发」 |
+| 群里机器人不发表情了 | `error: invalid session: aiocqhttp:group:123456789` | 什么都没有，只是「不发」 |
 | 回复时好时坏 | `429 - Channel rate limit reached` | 偶尔沉默一下 |
 | 装完插件没反应 | `ModuleNotFoundError: No module named 'xxx'` | 插件面板里转圈 |
 
@@ -62,7 +62,7 @@ AstrBot 的日志里其实什么都不缺：`astrbot.log` 会记下 429、`inval
 ```yaml
 notify:
   push_to_admin: true
-  admin_session: "snowluma:FriendMessage:123456789"
+  admin_session: "<平台ID>:FriendMessage:<你的QQ号>"
   push_cooldown_seconds: 300
 ```
 
