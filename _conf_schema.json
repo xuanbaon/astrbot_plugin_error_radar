@@ -83,7 +83,7 @@
         "description": "推送目标会话",
         "type": "string",
         "default": "",
-        "hint": "形如 snowluma:FriendMessage:123456789。平台 ID 不是 aiocqhttp 这类类型名，可用 /雷达 群 自查。"
+        "hint": "格式 <平台ID>:FriendMessage:<你的QQ号>。平台 ID 是面板「消息平台」里那个适配器的 id（默认常与类型同名，如 aiocqhttp，改过就以实际为准），可用 /雷达 群 自查后照着抄。"
       },
       "push_cooldown_seconds": {
         "description": "同类错误推送冷却（秒）",
