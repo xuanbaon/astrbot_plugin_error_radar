@@ -1,0 +1,22 @@
+name: error_radar
+display_name: 错误雷达
+short_desc: 把 AstrBot 的报错翻译成人话，并主动告诉你哪里坏了
+desc: >-
+  三路采集 AstrBot 的异常：插件处理抛错、LLM 工具返回失败、核心日志里的
+  WARN/ERROR。自动归类、去重、落盘，并用中文解释现象、给出处置建议。
+  支持 /雷达 命令查看、详情、群会话 ID 自查，也支持把新错误推送到指定会话。
+help: |-
+  /雷达            今日概览
+  /雷达 列表 20    最近的错误
+  /雷达 详情 <编号> 完整上下文与建议
+  /雷达 群         查看群号与正确的会话 ID 写法
+  /雷达 测试       自检告警通路
+  /雷达 清空       清空记录
+version: 1.0.0
+author: WorkBuddy
+repo: 
+astrbot_version: ">=4.17.0"
+tags:
+  - 运维
+  - 日志
+  - 诊断

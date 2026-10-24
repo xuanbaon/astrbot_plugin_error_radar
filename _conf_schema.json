@@ -1,0 +1,93 @@
+{
+  "collect": {
+    "description": "采集范围",
+    "type": "object",
+    "hint": "默认三路全开。只想看插件异常时，关掉「监听核心日志」。",
+    "items": {
+      "capture_core_logs": {
+        "description": "监听核心日志",
+        "type": "bool",
+        "default": true,
+        "hint": "读取 data/logs/astrbot.log 的新增内容，抓 WARN/ERROR。"
+      },
+      "min_level": {
+        "description": "最低记录等级",
+        "type": "string",
+        "default": "WARN",
+        "options": ["WARN", "ERROR", "CRITICAL"],
+        "hint": "选 WARN 能看到限流、投递失败这类「不崩但坏了」的问题。"
+      },
+      "log_path": {
+        "description": "日志路径",
+        "type": "string",
+        "default": "",
+        "hint": "留空则自动使用 data/logs/astrbot.log。"
+      },
+      "poll_interval_seconds": {
+        "description": "日志轮询间隔（秒）",
+        "type": "int",
+        "default": 5,
+        "slider": {"min": 2, "max": 60, "step": 1}
+      },
+      "backfill_on_start": {
+        "description": "启动时回读历史日志",
+        "type": "bool",
+        "default": false,
+        "hint": "开启后重载插件会把已有日志里的告警也收进来，第一次用建议开一次。"
+      },
+      "ignore_keywords": {
+        "description": "忽略关键词",
+        "type": "list",
+        "default": [
+          "has no speech-to-text provider",
+          "DeprecationWarning",
+          "Executed handler"
+        ],
+        "hint": "命中任一关键词的记录直接丢弃，用来压掉已知噪音。"
+      },
+      "max_records": {
+        "description": "内存内保留条数",
+        "type": "int",
+        "default": 400,
+        "slider": {"min": 50, "max": 3000, "step": 50}
+      }
+    }
+  },
+  "notify": {
+    "description": "主动通知",
+    "type": "object",
+    "hint": "新出现的错误会以中文摘要推送到你指定的会话，同一分类有冷却时间。",
+    "items": {
+      "push_to_admin": {
+        "description": "推送新错误",
+        "type": "bool",
+        "default": false
+      },
+      "admin_session": {
+        "description": "推送目标会话",
+        "type": "string",
+        "default": "",
+        "hint": "形如 snowluma:FriendMessage:123456789。平台 ID 不是 aiocqhttp 这类类型名，可用 /雷达 群 自查。"
+      },
+      "push_cooldown_seconds": {
+        "description": "同类错误推送冷却（秒）",
+        "type": "int",
+        "default": 300,
+        "slider": {"min": 60, "max": 3600, "step": 60}
+      }
+    }
+  },
+  "assist": {
+    "description": "辅助修错",
+    "type": "object",
+    "hint": "开启后，每轮对话会追加一段「会话 ID 该怎么写」的规则，能避免跨群发消息时猜错格式。",
+    "items": {
+      "inject_session_hint": {
+        "description": "注入会话 ID 规则",
+        "type": "bool",
+        "default": false,
+        "hint": "会让模型知道本机平台 ID 与群号，减少 invalid session 报错。"
+      }
+    }
+  }
+}
